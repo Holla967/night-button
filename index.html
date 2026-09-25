@@ -27,9 +27,21 @@
   body.night { --dim: 0.32; }
   #screen {
     position: fixed; inset: 0;
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    text-align: center; padding: 4vmin 7vmin; box-sizing: border-box;
+    display: flex; flex-direction: column; align-items: center;
+    text-align: center; box-sizing: border-box;
+    padding: calc(3vmin + env(safe-area-inset-top)) calc(7vmin + env(safe-area-inset-right))
+             calc(6vmin + env(safe-area-inset-bottom)) calc(7vmin + env(safe-area-inset-left));
     opacity: var(--dim); transition: opacity 1s, background 0.2s;
+    overflow: hidden;
+  }
+  /* margin-auto centering never pushes content above the top edge, unlike justify-content: center */
+  #clock { margin-top: auto; }
+  #cta   { margin-bottom: auto; }
+  @media (orientation: landscape) {
+    #clock { font-size: 17vmin; }
+    #msg   { font-size: 5vmin; margin: 2.5vmin 0; max-width: 44ch; }
+    #cta   { font-size: 4vmin; }
+    #date  { margin-top: 0.5vmin; }
   }
   #clock { font-size: 22vmin; font-weight: 300; letter-spacing: -0.02em; line-height: 1; }
   #ampm  { font-size: 5vmin; font-weight: 400; margin-left: 0.3em; vertical-align: baseline; }
@@ -90,6 +102,25 @@ const MESSAGES = [
   "This too shall pass. Literally. Repeatedly. I love you.",
   "They're doing a colonoscopy to find your insides. I found them years ago. Best insides ever.",
   "If you need me, tap. If you need the bathroom, I already know. Go.",
+  "You've never looked more radiant. Or more see-through. I love you.",
+  "Tonight you're a human water slide. Tomorrow you're a champion. Either way you're mine.",
+  "I promised you the world. Tonight I can offer broth, a clear straw, and unlimited devotion.",
+  "You're not losing your dignity. You're just lending it out for the evening. I'll hold it for you.",
+  "Fun fact: the doctor gets to see the part of you I've been looking at for years. The heart, I mean.",
+  "Marriage is two people taking turns being the sick one. Tonight's your turn. I've got the wipes.",
+  "You are 90 percent water and 100 percent my favorite person.",
+  "Tomorrow they'll say it's the cleanest colon they've ever seen. Take the win.",
+  "The toilet paper roll and I have one thing in common tonight: we're both fully committed to you.",
+  "Whatever noise that was, I heard nothing. I love you and I heard nothing.",
+  "If love could be measured in Gatorade refills, you'd be drowning in it.",
+  "Nobody looks glamorous on prep night. You come the closest. Tap me if you need a hand.",
+  "Roses are red, the broth is warm, you'll get through tonight, and I'll weather the storm. Cheesy? Yes. True? Also yes.",
+  "You're passing this test with flying colors. Mostly clear. Doctor's orders.",
+  "One day we'll laugh about tonight. Actually, I'm already laughing. Lovingly. From the next room.",
+  "The prep empties everything except one thing. I'm still here. I'm the one thing.",
+  "Every superhero has an origin story. Yours involves a jug of lemon-flavored regret. Still my hero.",
+  "I checked. The bathroom light is on. So am I. Tap anytime.",
+  "You've earned a solid week of me doing the dishes. Tonight you're doing enough flushing for both of us.",
 ];
 
 // ---------- clock and night dimming ----------
