@@ -28,24 +28,24 @@
   #screen {
     position: fixed; inset: 0;
     display: flex; flex-direction: column; justify-content: center; align-items: center;
-    text-align: center; padding: 6vh 7vw; box-sizing: border-box;
+    text-align: center; padding: 4vmin 7vmin; box-sizing: border-box;
     opacity: var(--dim); transition: opacity 1s, background 0.2s;
   }
-  #clock { font-size: 22vw; font-weight: 300; letter-spacing: -0.02em; line-height: 1; }
-  #ampm  { font-size: 5vw; font-weight: 400; margin-left: 0.3em; vertical-align: baseline; }
-  #date  { font-size: 4.5vw; margin-top: 1.5vh; opacity: 0.8; }
-  #msg   { font-size: 6vw; line-height: 1.35; margin: 5vh 0; max-width: 34ch; font-weight: 500; }
-  #cta   { font-size: 5vw; opacity: 0.85; margin-top: 2vh; }
+  #clock { font-size: 22vmin; font-weight: 300; letter-spacing: -0.02em; line-height: 1; }
+  #ampm  { font-size: 5vmin; font-weight: 400; margin-left: 0.3em; vertical-align: baseline; }
+  #date  { font-size: 4.5vmin; margin-top: 1.5vmin; opacity: 0.8; }
+  #msg   { font-size: 6vmin; line-height: 1.35; margin: 4vmin 0; max-width: 34ch; font-weight: 500; }
+  #cta   { font-size: 5vmin; opacity: 0.85; margin-top: 1vmin; }
   #last  { position: fixed; bottom: calc(1.5vh + env(safe-area-inset-bottom)); left: 0; right: 0;
-           font-size: 3vw; text-align: center; opacity: 0.45; }
+           font-size: 3vmin; text-align: center; opacity: 0.45; }
 
   /* pressed state: bright, unmistakable */
   body.calling #screen { background: #ffb14a; color: #000; opacity: 1; }
   body.calling #clock, body.calling #date, body.calling #last { display: none; }
-  body.calling #msg { font-size: 12vw; font-weight: 700; }
-  body.calling #cta { font-size: 6vw; opacity: 1; }
+  body.calling #msg { font-size: 12vmin; font-weight: 700; }
+  body.calling #cta { font-size: 6vmin; opacity: 1; }
   #log { position: fixed; inset: 0; background: #000; color: var(--amber); padding: 8vh 6vw;
-         font-size: 4vw; overflow: auto; display: none; }
+         font-size: 4vmin; overflow: auto; display: none; }
   #log.show { display: block; }
 </style>
 </head>
@@ -126,7 +126,7 @@ showLast();
 // full log at #log (for Daddy, not for her)
 function showLog() {
   const l = loadLog().slice().reverse();
-  $("log").innerHTML = "<div style='font-size:6vw;margin-bottom:3vh'>Taps</div>" +
+  $("log").innerHTML = "<div style='font-size:6vmin;margin-bottom:3vmin'>Taps</div>" +
     (l.length ? l.map(t => "<div style='margin:1.2vh 0'>" + fmt(t) + "</div>").join("") : "<div>None yet.</div>") +
     "<div style='margin-top:5vh;opacity:.6'>Tap here to close.</div>";
   $("log").classList.add("show");
