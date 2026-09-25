@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Get Nel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Get Nel">
+<meta name="theme-color" content="#000000">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<style>
+  :root {
+    --amber: #ffb14a;
+    --dim: 0.9;           /* daytime text opacity */
+  }
+  html, body {
+    margin: 0; padding: 0; height: 100%;
+    background: #000; color: var(--amber);
+    font-family: -apple-system, "SF Pro Rounded", "Helvetica Neue", sans-serif;
+    -webkit-user-select: none; user-select: none;
+    -webkit-touch-callout: none; touch-action: manipulation;
+    overflow: hidden;
+  }
+  body.night { --dim: 0.32; }
+  #screen {
+    position: fixed; inset: 0;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    text-align: center; padding: 6vh 7vw; box-sizing: border-box;
+    opacity: var(--dim); transition: opacity 1s, background 0.2s;
+  }
+  #clock { font-size: 22vw; font-weight: 300; letter-spacing: -0.02em; line-height: 1; }
+  #ampm  { font-size: 5vw; font-weight: 400; margin-left: 0.3em; vertical-align: baseline; }
+  #date  { font-size: 4.5vw; margin-top: 1.5vh; opacity: 0.8; }
+  #msg   { font-size: 6vw; line-height: 1.35; margin: 5vh 0; max-width: 34ch; font-weight: 500; }
+  #cta   { font-size: 5vw; opacity: 0.85; margin-top: 2vh; }
+  #last  { position: fixed; bottom: calc(1.5vh + env(safe-area-inset-bottom)); left: 0; right: 0;
+           font-size: 3vw; text-align: center; opacity: 0.45; }
+
+  /* pressed state: bright, unmistakable */
+  body.calling #screen { background: #ffb14a; color: #000; opacity: 1; }
+  body.calling #clock, body.calling #date, body.calling #last { display: none; }
+  body.calling #msg { font-size: 12vw; font-weight: 700; }
+  body.calling #cta { font-size: 6vw; opacity: 1; }
+  #log { position: fixed; inset: 0; background: #000; color: var(--amber); padding: 8vh 6vw;
+         font-size: 4vw; overflow: auto; display: none; }
+  #log.show { display: block; }
+</style>
+</head>
+<body>
+<div id="screen">
+  <div id="clock">--:--</div>
+  <div id="date"></div>
+  <div id="msg"></div>
+  <div id="cta">Tap anywhere and I'll come.</div>
+</div>
+<div id="last"></div>
+<div id="log"></div>
+
+<script>
+// ---------- settings (edit these) ----------
+const YOUR_NAME     = "Nel";            // who comes running
+const SHORTCUT_NAME = "Get Nel";        // must match the Shortcut name on her phone exactly
+const NIGHT_START   = 21;               // 9 pm: dim
+const NIGHT_END     = 7;                // 7 am: brighten
+const MESSAGE_EVERY = 90;               // seconds between messages
+const RESET_AFTER   = 25;               // seconds before the amber screen goes back to normal
+
+// ---------- corny, loving, colonoscopy-prep approved ----------
+const MESSAGES = [
+  "Even though you're leaking clear liquids, I look forward to giving you all my debt when I pass.",
+  "In sickness and in health. In clear liquids and in Jell-O. I'm right here.",
+  "Roses are red, the prep is vile. You're still my favorite, by a mile.",
+  "You are the strongest person I know. Also, tonight, the emptiest.",
+  "They say the prep is the worst part. They clearly haven't tried my cooking.",
+  "Whatever comes out tonight, my love for you stays in.",
+  "Tap me anytime. I'm on call. Like a plumber, but cuter.",
+  "You're a hero. Heroes just spend more time on the throne than people think.",
+  "Clear liquids only, but my love for you is thick as gravy.",
+  "I'd do the prep for you if I could. I can't. But I'll bring the good wipes.",
+  "Tomorrow they look inside you and find what I already know: a whole lot of heart.",
+  "Tap anywhere and I'll come running. Slower than you've been running to the bathroom, but I'll come.",
+  "Broth, Gatorade, and me. Three things getting you through tonight. Two of them are useful.",
+  "Good news: by morning you'll be lighter than the day I met you. Bad news: same husband.",
+  "The toilet has never felt so loved. Neither have you. I'm right here.",
+  "You've cleared out everything tonight except one thing: me. I'm not going anywhere.",
+  "Twelve hours in the bathroom and you're still the best thing I've ever seen.",
+  "This too shall pass. Literally. Repeatedly. I love you.",
+  "They're doing a colonoscopy to find your insides. I found them years ago. Best insides ever.",
+  "If you need me, tap. If you need the bathroom, I already know. Go.",
+];
+
+// ---------- clock and night dimming ----------
+const $ = id => document.getElementById(id);
+function tick() {
+  const d = new Date();
+  let h = d.getHours(), m = d.getMinutes();
+  const ampm = h >= 12 ? "PM" : "AM";
+  h = h % 12 || 12;
+  $("clock").innerHTML = h + ":" + String(m).padStart(2, "0") + "<span id='ampm'>" + ampm + "</span>";
+  $("date").textContent = d.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+  const hr = d.getHours();
+  const night = (NIGHT_START > NIGHT_END) ? (hr >= NIGHT_START || hr < NIGHT_END) : (hr >= NIGHT_START && hr < NIGHT_END);
+  document.body.classList.toggle("night", night);
+}
+setInterval(tick, 1000); tick();
+
+// ---------- rotating message ----------
+let mi = Math.floor(Math.random() * MESSAGES.length);
+function nextMessage() { mi = (mi + 1) % MESSAGES.length; $("msg").textContent = MESSAGES[mi]; }
+$("msg").textContent = MESSAGES[mi];
+setInterval(nextMessage, MESSAGE_EVERY * 1000);
+
+// ---------- press log ----------
+const KEY = "getnel-log";
+function loadLog() { try { return JSON.parse(localStorage.getItem(KEY) || "[]"); } catch (e) { return []; } }
+function saveLog(l) { try { localStorage.setItem(KEY, JSON.stringify(l.slice(-100))); } catch (e) {} }
+function fmt(ts) { return new Date(ts).toLocaleString(undefined, { weekday: "short", hour: "numeric", minute: "2-digit" }); }
+function showLast() {
+  const l = loadLog();
+  $("last").textContent = l.length ? "Last tap: " + fmt(l[l.length - 1]) : "";
+}
+showLast();
+// full log at #log (for Nel, not for her)
+function showLog() {
+  const l = loadLog().slice().reverse();
+  $("log").innerHTML = "<div style='font-size:6vw;margin-bottom:3vh'>Taps</div>" +
+    (l.length ? l.map(t => "<div style='margin:1.2vh 0'>" + fmt(t) + "</div>").join("") : "<div>None yet.</div>") +
+    "<div style='margin-top:5vh;opacity:.6'>Tap here to close.</div>";
+  $("log").classList.add("show");
+}
+if (location.hash === "#log") showLog();
+window.addEventListener("hashchange", () => { location.hash === "#log" ? showLog() : $("log").classList.remove("show"); });
+$("log").addEventListener("click", () => { location.hash = ""; $("log").classList.remove("show"); });
+
+// ---------- the button: the whole screen ----------
+let lastFire = 0, resetTimer = null;
+function fire() {
+  const now = Date.now();
+  if (now - lastFire < 4000) return;      // ignore rapid double taps
+  lastFire = now;
+  const l = loadLog(); l.push(now); saveLog(l); showLast();
+  document.body.classList.add("calling");
+  $("msg").textContent = "Getting " + YOUR_NAME + "…";
+  $("cta").textContent = "If a box pops up, tap Open.";
+  if (navigator.vibrate) navigator.vibrate(200);
+  clearTimeout(resetTimer);
+  resetTimer = setTimeout(() => {
+    document.body.classList.remove("calling");
+    $("cta").textContent = "Tap anywhere and I'll come.";
+    nextMessage();
+  }, RESET_AFTER * 1000);
+  // hand off to the Shortcut (iMessage + FaceTime Audio)
+  window.location.href = "shortcuts://run-shortcut?name=" + encodeURIComponent(SHORTCUT_NAME);
+}
+$("screen").addEventListener("click", fire);
+
+// ---------- keep the screen awake (belt and braces with Auto-Lock: Never) ----------
+let lock = null;
+async function wake() {
+  try { if ("wakeLock" in navigator) lock = await navigator.wakeLock.request("screen"); } catch (e) {}
+}
+wake();
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") wake(); });
+
+// ---------- offline cache ----------
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+</script>
+</body>
+</html>
